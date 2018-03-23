@@ -1,0 +1,8 @@
+{
+  "name": "EpiBlog API server",
+  "description": "API server from EpiBlog Epitech project",
+  "repository": "https://github.com/NodeJSEpitech/server.git",
+  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
+  "keywords": ["node", "epiblog", "heroku"],
+  "image": "heroku/epiblog-api"
+}

@@ -1,1 +1,1 @@
-# server
+> EpiBlog API Server
