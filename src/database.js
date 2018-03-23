@@ -26,11 +26,12 @@ function findAll(table) {
     return results;
 }
 
-function insert(table, data) {
-    const fields = `'${Object.keys(data).join("', '")}'`,
-        values = `'${Object.values(data).join("', '")}'`;
-
-    connection.query(`INSERT INTO '${table}' (${fields}) VALUES(${values})`);
+function insert(table, values) {
+    connection.query(`INSERT INTO '${table}' SET ?`, (error, results, fields) => {
+        if (error) {
+            throw error;
+        }
+    });
 }
 
 module.exports = {
