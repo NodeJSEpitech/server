@@ -1,30 +1,31 @@
 const express = require('express'),
+    session = require('express-session'),
     app = express(),
-    variables = require('./config/parameters'),
+    parameters = require('./config/parameters'),
     security = require('./src/security'),
     user = require('./src/user'),
-    {port} = variables
-;
+    database = require('./src/database');
+
+database.connect();
 
 app
-    .get('/', (req, res) => {
-        res.json({
-            "success": true,
-            "message": "Hello World"
-        });
-    })
-;
+    .use(session({
+        secret: parameters.secret
+    }))
 
-app
+    .get('/', (req, res) => res.json({"success": true, "message": "EpiBlog API server"}))
     .get('/user/create', user.create)
     .get('/security/authenticate', security.authenticate)
-;
 
-app
     .use(security.check_authentication)
-    .get('/user/get', user.get)
-;
+    // .get('/user/get', user.get)
 
-app
-    .listen(port, () => console.log(`Listening on ${port}`))
+    .listen(parameters.port, () => {
+        console.log(`Listening on ${parameters.port}`);
+    })
+    .on('close', () => {
+        console.log('Closing server...');
+        database.disconnect();
+        console.log('Server closed');
+    })
 ;
