@@ -1,27 +1,26 @@
 const express = require('express'),
-    security = require('./src/model/security'),
-    database = require('./src/model/database'),
-    // user = require('./src/controller/user'),
+    parser = require('body-parser'),
+    security = require('./controller/security'),
+    user = require('./controller/user'),
     // post = require('./src/post'),
     // comment = require('./src/comment'),
-    parameters = require('./config/parameters'),
-    {status} = require('./config/variables'),
+    parameters = require('../config/parameters'),
+    {status, messages} = require('../config/variables'),
+    env = process.env.NODE_ENV,
     app = express()
 ;
 
-database.connect();
+const server = app
+    .use(parser.json())
 
-app
-    // dev
-    .post('/generate', security.generate)
-
-    .get('/', (request, response) => response.status(status.ok).json({'message': 'Welcome to EpiBlog API server'}))
+    .get('/', (request, response) => response.status(status.ok).json({'message': messages.success.welcome.unauth}))
     .post('/authenticate', security.authenticate)
+    .post('/users', user.create)
 
-    .use(security.checkAuthentication)
+    .use(security.check)
 
+    .get('/me', (request, response) => response.status(status.ok).json({'message': messages.success.welcome.auth, data:request.user}))
     // .get('/users/:id(\d+)', user.get)
-    // .post('/users', user.create)
     // .patch('/users/:id(\d+)', user.update)
     // .delete('/users/:id(\d+)', user.delete)
     //
@@ -34,10 +33,11 @@ app
     // .patch('/posts/:id(\d+)/comments/:id(\d+)', comment.update)
     // .delete('/posts/:id(\d+)/comments/:id(\d+)', comment.delete)
 
-    .use((error, request, response, next) => response.status(status.ko.server).json({'message': 'An error occurred'}))
+    .use((request, response) => response.status(status.ko.server).json({'message': messages.error.fallback}))
     .listen(parameters.port, () => {
+        console.log(`ENV is ${env}`);
         console.log(`Listening on ${parameters.port}`);
     })
-
-    .on('close', () => database.disconnect())
 ;
+
+module.exports = server;

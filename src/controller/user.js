@@ -1,8 +1,6 @@
-const database = require('./database.js'),
-    regexps = {
-        email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,15}$/
-    };
+const database = require('../model/database.js'),
+    hasher = require('password-hash'),
+    {status, messages, regexps} = require('../../config/variables');
 
 
 function isValidEmail(email) {
@@ -20,34 +18,62 @@ function create(request, response) {
         lastname,
         email,
         password,
-        confirmPassword
+        passwordConfirmation
     } = request.body;
     let success = false,
         message = '';
 
-    if (!username || !firstname || !lastname || !email || !password || !confirmPassword) {
-        message = 'Some fields are missing';
+    if (!username) {
+        message = messages.error.user.create.missing_field.replace('%field%', 'username');
+    } else if (!firstname) {
+        message = messages.error.user.create.missing_field.replace('%field%', 'firstname');
+    } else if (!lastname) {
+        message = messages.error.user.create.missing_field.replace('%field%', 'lastname');
+    } else if (!email) {
+        message = messages.error.user.create.missing_field.replace('%field%', 'email');
     } else if (isValidEmail(email) === false) {
-        message = 'Invalid email';
+        message = messages.error.user.create.invalid_email;
+    } else if (!password) {
+        message = messages.error.user.create.missing_field.replace('%field%', 'password');
     } else if (isValidPassword(password) === false) {
-        message = 'Invalid password';
-    } else if (password !== confirmPassword) {
-        message = 'Please re-confirm your password';
+        message = messages.error.user.create.invalid_password;
+    } else if (!passwordConfirmation) {
+        message = messages.error.user.create.missing_field.replace('%field%', 'passwordConfirmation');
+    } else if (password !== passwordConfirmation) {
+        message = messages.error.user.create.password_confirmation;
     } else {
-        database.insert('user', {
-            'firstname': firstname,
-            'lastname': lastname,
-            'email': email,
-            'password': password
+        database.findBy('user', {'username': username}, 1).then((results) => {
+            if (results.length > 0) {
+                response.status(status.ko.badrequest).json({'message': messages.error.user.create.username_exists});
+            } else {
+                database.findBy('user', {'email': email}).then((results) => {
+                    if (results.length > 0) {
+                        response.status(status.ko.badrequest).json({'message': messages.error.user.create.email_exists});
+                    } else {
+                        database.insert('user', {
+                            'username': username,
+                            'firstname': firstname,
+                            'lastname': lastname,
+                            'email': email,
+                            'password': hasher.generate(password)
+                        });
+                        response.status(status.ok).json({'message': messages.success.user.create});
+                    }
+                });
+            }
         });
+        return;
     }
-    response.json({
-        'success': true,
-        'message': 'User newly created'
-    });
+    response.status(status.ko.badrequest).json({'message': message});
 }
 
-function get(request, response) {
+function remove(request, response)
+{
+
+}
+
+function get(request, response)
+{
 
 }
 

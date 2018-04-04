@@ -1,10 +1,10 @@
 const mysql = require('mysql'),
-    parameters = require('../config/parameters');
-
+    parameters = require('../../config/parameters'),
+    env = process.env.NODE_ENV;
 let connection = null;
 
-function connect() {
-    console.log(parameters);
+function connect()
+{
     connection = mysql.createConnection({
         host: parameters.db_host,
         user: parameters.db_username,
@@ -13,37 +13,104 @@ function connect() {
     });
 }
 
-function disconnect() {
+function disconnect()
+{
     connection.end();
 }
 
-function findAll(table) {
-    connection.query(`SELECT * FROM ${table}`, (error, results, fields) => {
-        if (error) throw error;
-        return results;
+function findBy(table, wheres = null, limit = null)
+{
+    let criterion,
+        where = '',
+        criteria = [];
+
+    if (env === 'test') {
+        table = `${table}_test`;
+    }
+
+    if (wheres !== null) {
+        for (criterion in wheres) {
+            criteria.push(`${criterion}='${wheres[criterion]}'`);
+        }
+        where = `WHERE ${criteria.join(' AND ')}`;
+    }
+
+    limit = (limit === null) ? '' : `LIMIT ${parseInt(limit)}`;
+
+    connect();
+    return new Promise((resolve, reject) => {
+        connection.query(`SELECT * FROM ${table} ${where} ${limit}`, (error, rows) => {
+            disconnect();
+            if (error) {
+                return reject(error);
+            }
+            resolve(rows);
+        });
     });
-    return [];
 }
 
-function findOneOrNull(table, id) {
-    connection.query(`SELECT * FROM ${table} WHERE id=${id}`, (error, results, fields) => {
-        if (error) throw error;
-        return results.length !== 1 ? null : results[0];
-    });
+function insert(table, wheres)
+{
+    if (env === 'test') {
+        table = `${table}_test`;
+    }
+
+    connect();
+    connection.query(`INSERT INTO ${table} SET ?`, wheres);
+    disconnect();
 }
 
-function insert(table, values) {
-    connection.query(`INSERT INTO ${table} SET ?`, values, (error, results, fields) => {
+function update(table, values, wheres = null)
+{
+    let criterion,
+        where = '',
+        criteria = [];
+
+    if (env === 'test') {
+        table = `${table}_test`;
+    }
+
+    if (wheres !== null) {
+        for (criterion in wheres) {
+            criteria.push(`${criterion}='${wheres[criterion]}'`);
+        }
+        where = `WHERE ${criteria.join(' AND ')}`;
+    }
+
+    connection.query(`UPDATE ${table} SET ? ${where}`, values);
+}
+
+function remove(table, values = null)
+{
+    let value,
+        where = '',
+        criteria = [];
+
+    if (env === 'test') {
+        table = `${table}_test`;
+    }
+
+    if (values !== null) {
+        for (value in values) {
+            criteria.push(`${value}='${values[value]}'`);
+        }
+        where = `WHERE ${criteria.join(' AND ')}`;
+    }
+
+    connect();
+    connection.query(`DELETE FROM ${table} ${where}`, (error) => {
         if (error) {
             throw error;
         }
     });
+    disconnect();
 }
 
 module.exports = {
     "connect": connect,
     "disconnect": disconnect,
-    "findAll": findAll,
-    "findOneOrNull": findOneOrNull,
-    "insert": insert
+    "findBy": findBy,
+    "insert": insert,
+    "update": update,
+    "remove": remove
 };
