@@ -1,32 +1,31 @@
 const mysql = require('mysql'),
     parameters = require('../../config/parameters'),
-    env = process.env.NODE_ENV;
+    env = process.env.NODE_ENV; // eslint-disable-line no-undef
 let connection = null;
 
-function connect()
-{
+function getFinalTable(table) {
+    return env === 'test' ? `${table}_test` : table;
+}
+
+function connect() {
     connection = mysql.createConnection({
-        host: parameters.db_host,
-        user: parameters.db_username,
-        password: parameters.db_password,
-        database: parameters.db_name
+        'host': parameters.db_host,
+        'user': parameters.db_username,
+        'password': parameters.db_password,
+        'database': parameters.db_name
     });
 }
 
-function disconnect()
-{
+function disconnect() {
     connection.end();
 }
 
-function findBy(table, wheres = null, limit = null)
-{
-    let criterion,
+function findBy(table, wheres = null, limit = null) {
+    const criteria = [],
+        finalTable = getFinalTable(table);
+    let criterion = null,
         where = '',
-        criteria = [];
-
-    if (env === 'test') {
-        table = `${table}_test`;
-    }
+        finalLimit = '';
 
     if (wheres !== null) {
         for (criterion in wheres) {
@@ -35,40 +34,42 @@ function findBy(table, wheres = null, limit = null)
         where = `WHERE ${criteria.join(' AND ')}`;
     }
 
-    limit = (limit === null) ? '' : `LIMIT ${parseInt(limit)}`;
+    if (limit !== null) {
+        finalLimit = `LIMIT ${parseInt(limit, 10)}`;
+    }
 
     connect();
     return new Promise((resolve, reject) => {
-        connection.query(`SELECT * FROM ${table} ${where} ${limit}`, (error, rows) => {
+        connection.query(`SELECT * FROM ${finalTable} ${where} ${finalLimit}`, (error, rows) => {
             disconnect();
             if (error) {
                 return reject(error);
             }
-            resolve(rows);
+            return resolve(rows);
         });
     });
 }
 
-function insert(table, wheres)
-{
-    if (env === 'test') {
-        table = `${table}_test`;
-    }
+function insert(table, wheres) {
+    const finalTable = getFinalTable(table);
 
     connect();
-    connection.query(`INSERT INTO ${table} SET ?`, wheres);
-    disconnect();
+    return new Promise((resolve, reject) => {
+        connection.query(`INSERT INTO ${finalTable} SET ?`, wheres, (error, rows) => {
+            disconnect();
+            if (error) {
+                return reject(error);
+            }
+            return resolve(rows);
+        });
+    });
 }
 
-function update(table, values, wheres = null)
-{
-    let criterion,
-        where = '',
-        criteria = [];
-
-    if (env === 'test') {
-        table = `${table}_test`;
-    }
+function update(table, values, wheres = null) {
+    const criteria = [],
+        finalTable = getFinalTable(table);
+    let criterion = null,
+        where = '';
 
     if (wheres !== null) {
         for (criterion in wheres) {
@@ -77,28 +78,24 @@ function update(table, values, wheres = null)
         where = `WHERE ${criteria.join(' AND ')}`;
     }
 
-    connection.query(`UPDATE ${table} SET ? ${where}`, values);
+    connection.query(`UPDATE ${finalTable} SET ? ${where}`, values);
 }
 
-function remove(table, values = null)
-{
-    let value,
-        where = '',
-        criteria = [];
+function remove(table, wheres = null) {
+    const criteria = [],
+        finalTable = getFinalTable(table);
+    let value = null,
+        where = '';
 
-    if (env === 'test') {
-        table = `${table}_test`;
-    }
-
-    if (values !== null) {
-        for (value in values) {
-            criteria.push(`${value}='${values[value]}'`);
+    if (wheres !== null) {
+        for (value in wheres) {
+            criteria.push(`${value}='${wheres[value]}'`);
         }
         where = `WHERE ${criteria.join(' AND ')}`;
     }
 
     connect();
-    connection.query(`DELETE FROM ${table} ${where}`, (error) => {
+    connection.query(`DELETE FROM ${finalTable} ${where}`, (error) => {
         if (error) {
             throw error;
         }

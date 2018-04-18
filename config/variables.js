@@ -5,24 +5,27 @@ module.exports = {
             'server': 500,
             'badrequest': 400,
             'unauthorized': 403,
-            'notfound': 404,
+            'notfound': 404
         }
     },
     'messages': {
         'success': {
             'welcome': {
                 'unauth': 'Welcome to EpiBlog API server [unauthenticated]',
-                'auth': 'Welcome to EpiBlog API server [authenticated]',
+                'auth': 'Welcome to EpiBlog API server [authenticated]'
             },
             'security': {
                 'authenticated': 'You are successfully authenticated'
             },
             'user': {
-                'create': 'Account successfully created'
+                'create': 'Account successfully created',
+                'get': 'User successfully retrieved',
+                'update': 'User successfully updated',
+                'remove': 'User successfully removed'
             }
         },
         'error': {
-            'fallback': 'An error occured',
+            'fallback': 'An error occurred',
             'security': {
                 'bad_credentials': 'Bad credentials',
                 'missing_token': 'No token provided',
@@ -30,15 +33,27 @@ module.exports = {
             },
             'user': {
                 'create': {
-                    'missing_field': 'Field %field% is missing',
+                    'missing_parameter': 'Parameter %parameter% is missing',
                     'invalid_email': 'Invalid email',
                     'invalid_password': 'Password is too weak',
                     'password_confirmation': 'Password confirmation does not match password',
                     'username_exists': 'Username already exists',
                     'email_exists': 'Email already exists'
+                },
+                'get': {
+                    'not_found': 'User not found',
+                    'unauthorized': 'You are not administrator, you can not update an other account'
+                },
+                'update': {
+                    'missing_parameter': 'Parameter %parameter% is missing',
+                    'not_administrator': 'You are unauthorized to access other user\'s account information',
+                    'bad_parameter': 'You can\'t modify the field %field%'
+                },
+                'remove': {
+                    'unauthorized': 'You are not administrator, you can not delete an other account'
                 }
             }
-        },
+        }
     },
     'regexps': {
         'email': /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,

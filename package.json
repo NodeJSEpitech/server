@@ -8,12 +8,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha --exit --recursive test/"
+    "lint": "./node_modules/.bin/eslint src/ config/",
+    "test": "mocha --exit --recursive test/ && npm run clean",
+    "clean": "node test/_clean.js"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
+    "eslint": "^4.19.1",
     "express": "^4.15.2",
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.2.0",
@@ -22,6 +25,7 @@
     "password-hash": "^1.2.2"
   },
   "devDependencies": {
+    "eslint-plugin-import": "^2.10.0",
     "request": "^2.81.0",
     "tape": "^4.7.0"
   },

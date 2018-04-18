@@ -4,13 +4,14 @@ const chai = require('chai'),
     should = chai.should(),
     chaitHttp = require('chai-http'),
     server = require('../../src/server'),
-    {status, messages} = require('../../config/variables'),
-    user = {};
+    {status, messages} = require('../../config/variables');
 
 chai.use(chaitHttp);
 
 describe('User creation :', function() {
+
     it('should fail because username is missing', function(done) {
+        const user = {};
         chai
             .request(server)
             .post('/users')
@@ -28,7 +29,9 @@ describe('User creation :', function() {
     });
 
     it('should fail because firstname is missing', function(done) {
-        user.username = 'Jodo';
+        const user = {
+            'username': 'Jodo'
+        };
         chai
             .request(server)
             .post('/users')
@@ -46,7 +49,10 @@ describe('User creation :', function() {
     });
 
     it('should fail because lastname is missing', function(done) {
-        user.firstname = 'John';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John'
+        };
         chai
             .request(server)
             .post('/users')
@@ -64,7 +70,11 @@ describe('User creation :', function() {
     });
 
     it('should fail because email is missing', function(done) {
-        user.lastname = 'Doe';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe'
+        };
         chai
             .request(server)
             .post('/users')
@@ -82,7 +92,12 @@ describe('User creation :', function() {
     });
 
     it('should fail because email is invalid', function(done) {
-        user.email = 'fakeemail';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'bademail'
+        };
         chai
             .request(server)
             .post('/users')
@@ -100,7 +115,12 @@ describe('User creation :', function() {
     });
 
     it('should fail because password is missing', function(done) {
-        user.email = 'john.doe@mail.com';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'john.doe@email.com'
+        };
         chai
             .request(server)
             .post('/users')
@@ -118,7 +138,13 @@ describe('User creation :', function() {
     });
 
     it('should fail because password is too weak', function(done) {
-        user.password = 'EpiBlog42';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'john.doe@email.com',
+            'password': 'EpiBlog42'
+        };
         chai
             .request(server)
             .post('/users')
@@ -136,7 +162,13 @@ describe('User creation :', function() {
     });
 
     it('should fail because confirmation password is missing', function(done) {
-        user.password = 'EpiBlog42!';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'john.doe@email.com',
+            'password': 'EpiBlog42!'
+        };
         chai
             .request(server)
             .post('/users')
@@ -154,7 +186,14 @@ describe('User creation :', function() {
     });
 
     it('should fail because confirmation password does not match password', function(done) {
-        user.passwordConfirmation = 'EpiBlog21';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'john.doe@email.com',
+            'password': 'EpiBlog42!',
+            'passwordConfirmation': 'EpiBlog21'
+        };
         chai
             .request(server)
             .post('/users')
@@ -172,7 +211,14 @@ describe('User creation :', function() {
     });
 
     it('should be successful', function(done) {
-        user.passwordConfirmation = 'EpiBlog42!';
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'john.doe@email.com',
+            'password': 'EpiBlog42!',
+            'passwordConfirmation': 'EpiBlog42!'
+        };
         chai
             .request(server)
             .post('/users')
@@ -190,6 +236,14 @@ describe('User creation :', function() {
     });
 
     it('should fail because username already exists', function(done) {
+        const user = {
+            'username': 'Jodo',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'john.doe@email.com',
+            'password': 'EpiBlog42!',
+            'passwordConfirmation': 'EpiBlog42!'
+        };
         chai
             .request(server)
             .post('/users')
@@ -207,7 +261,14 @@ describe('User creation :', function() {
     });
 
     it('should fail because email already exists', function(done) {
-        user.username = 'Jodo2';
+        const user = {
+            'username': 'Jodo2',
+            'firstname': 'John',
+            'lastname': 'Doe',
+            'email': 'john.doe@email.com',
+            'password': 'EpiBlog42!',
+            'passwordConfirmation': 'EpiBlog42!'
+        };
         chai
             .request(server)
             .post('/users')
@@ -222,5 +283,13 @@ describe('User creation :', function() {
                 res.body.message.should.be.equal(messages.error.user.create.email_exists);
                 done();
             });
+    });
+});
+
+
+describe('Getting my information :', function() {
+
+    it('should be successful', function(done) {
+        done();
     });
 });
