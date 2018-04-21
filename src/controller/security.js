@@ -34,7 +34,7 @@ function authenticate(request, response) {
 }
 
 function check(request, response, next) {
-    const {token} = request.body;
+    const token = request.headers['x-authentication-token'];
 
     if (!token) {
         response.status(status.ko.badrequest).json({'message': messages.error.security.missing_token});

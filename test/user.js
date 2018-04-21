@@ -367,13 +367,11 @@ describe('Getting my information :', function() {
     });
 
     it('should fail because token is wrong', function(done) {
-        const token = {
-            'token': 'badtoken'
-        };
+        const token = 'badtoken';
         chai
             .request(server)
             .post('/me')
-            .send(token)
+            .set('x-authentication-token', token)
             .end(function(err, res) {
                 if (err) throw err;
                 res.should.be.a('object');
@@ -390,7 +388,7 @@ describe('Getting my information :', function() {
         chai
             .request(server)
             .get('/me')
-            .send({'token': globals.token})
+            .set('x-authentication-token', token)
             .end(function(err, res) {
                 if (err) throw err;
                 res.should.be.a('object');
