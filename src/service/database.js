@@ -1,23 +1,8 @@
-const mysql = require('mysql'),
-    parameters = require('../../config/parameters'),
+const {connection} = require('../middleware/database'),
     env = process.env.NODE_ENV; // eslint-disable-line no-undef
-let connection = null;
 
 function getFinalTable(table) {
     return env === 'test' ? `${table}_test` : table;
-}
-
-function connect() {
-    connection = mysql.createConnection({
-        'host': parameters.db_host,
-        'user': parameters.db_username,
-        'password': parameters.db_password,
-        'database': parameters.db_name
-    });
-}
-
-function disconnect() {
-    connection.end();
 }
 
 function findBy(table, wheres = null, limit = null) {
@@ -38,10 +23,8 @@ function findBy(table, wheres = null, limit = null) {
         finalLimit = `LIMIT ${parseInt(limit, 10)}`;
     }
 
-    connect();
     return new Promise((resolve, reject) => {
         connection.query(`SELECT * FROM ${finalTable} ${where} ${finalLimit}`, (error, rows) => {
-            disconnect();
             if (error) {
                 return reject(error);
             }
@@ -53,10 +36,8 @@ function findBy(table, wheres = null, limit = null) {
 function insert(table, wheres) {
     const finalTable = getFinalTable(table);
 
-    connect();
     return new Promise((resolve, reject) => {
         connection.query(`INSERT INTO ${finalTable} SET ?`, wheres, (error, rows) => {
-            disconnect();
             if (error) {
                 return reject(error);
             }
@@ -78,7 +59,14 @@ function update(table, values, wheres = null) {
         where = `WHERE ${criteria.join(' AND ')}`;
     }
 
-    connection.query(`UPDATE ${finalTable} SET ? ${where}`, values);
+    return new Promise((resolve, reject) => {
+        connection.query(`UPDATE ${finalTable} SET ? ${where}`, values, (error, rows) => {
+            if (error) {
+                return reject(error);
+            }
+            return resolve(rows);
+        });
+    });
 }
 
 function remove(table, wheres = null) {
@@ -94,18 +82,17 @@ function remove(table, wheres = null) {
         where = `WHERE ${criteria.join(' AND ')}`;
     }
 
-    connect();
-    connection.query(`DELETE FROM ${finalTable} ${where}`, (error) => {
-        if (error) {
-            throw error;
-        }
+    return new Promise((resolve, reject) => {
+        connection.query(`DELETE FROM ${finalTable} ${where}`, (error, rows) => {
+            if (error) {
+                return reject(error);
+            }
+            return resolve(rows);
+        });
     });
-    disconnect();
 }
 
 module.exports = {
-    "connect": connect,
-    "disconnect": disconnect,
     "findBy": findBy,
     "insert": insert,
     "update": update,

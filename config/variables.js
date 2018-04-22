@@ -33,9 +33,7 @@ module.exports = {
             },
             'user': {
                 'create': {
-                    'missing_parameter': 'Parameter %parameter% is missing',
-                    'invalid_email': 'Invalid email',
-                    'invalid_password': 'Password is too weak',
+                    'bad_parameter': 'Bad parameter',
                     'password_confirmation': 'Password confirmation does not match password',
                     'username_exists': 'Username already exists',
                     'email_exists': 'Email already exists'

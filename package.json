@@ -7,10 +7,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "lint": "./node_modules/.bin/eslint src/ config/",
-    "test": "mocha --exit --recursive test/ && npm run clean",
-    "clean": "node test/_clean.js"
+    "start": "NODE_ENV=prod node index.js",
+    "dev": "NODE_ENV=dev node index.js",
+    "lint": "NODE_ENV=prod ./node_modules/.bin/eslint src/ test/ config/",
+    "test": "NODE_ENV=test mocha --exit test/; npm run cleanup",
+    "cleanup": "NODE_ENV=test node ./cleanup.js"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -27,8 +28,7 @@
   },
   "devDependencies": {
     "eslint-plugin-import": "^2.10.0",
-    "request": "^2.81.0",
-    "tape": "^4.7.0"
+    "request": "^2.81.0"
   },
   "repository": {
     "type": "git",

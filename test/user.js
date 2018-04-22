@@ -1,7 +1,5 @@
-process.env.NODE_ENV = 'test';
-
 const chai = require('chai'),
-    should = chai.should(),
+    should = chai.should(), // eslint-disable-line no-unused-vars
     chaitHttp = require('chai-http'),
     server = require('../src/server'),
     {status, messages} = require('../config/variables'),
@@ -12,75 +10,80 @@ const chai = require('chai'),
             'firstname': 'John',
             'lastname': 'Doe',
             'email': 'john.doe@email.com',
-            'password': 'EpiBlog42!',
+            'password': 'EpiBlog42!'
         },
         'token': null
     };
 
 chai.use(chaitHttp);
 
-describe('User creation :', function() {
-
-    it('should fail because username is missing', function(done) {
+describe('User creation :', () => {
+    it('should fail because username is missing', (done) => {
         const user = {};
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .set(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.missing_parameter.replace('%parameter%', 'username'));
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because firstname is missing', function(done) {
+    it('should fail because firstname is missing', (done) => {
         const user = {
             'username': 'Jodo'
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.missing_parameter.replace('%parameter%', 'firstname'));
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because lastname is missing', function(done) {
+    it('should fail because lastname is missing', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John'
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.missing_parameter.replace('%parameter%', 'lastname'));
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because email is missing', function(done) {
+    it('should fail because email is missing', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -88,21 +91,23 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.missing_parameter.replace('%parameter%', 'email'));
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because email is invalid', function(done) {
+    it('should fail because email is invalid', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -111,21 +116,23 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.invalid_email);
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because password is missing', function(done) {
+    it('should fail because password is missing', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -134,21 +141,23 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.missing_parameter.replace('%parameter%', 'password'));
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because password is too weak', function(done) {
+    it('should fail because password is too weak', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -158,21 +167,23 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.invalid_password);
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because confirmation password is missing', function(done) {
+    it('should fail because confirmation password is missing', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -182,21 +193,23 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.missing_parameter.replace('%parameter%', 'passwordConfirmation'));
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should fail because confirmation password does not match password', function(done) {
+    it('should fail because confirmation password does not match password', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -207,21 +220,23 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                res.body.message.should.be.equal(messages.error.user.create.password_confirmation);
+                res.body.message.should.be.equal(messages.error.user.create.bad_parameter);
                 res.should.have.status(status.ko.badrequest);
                 done();
             });
     });
 
-    it('should be successful', function(done) {
+    it('should be successful', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -232,10 +247,12 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -246,7 +263,7 @@ describe('User creation :', function() {
             });
     });
 
-    it('should fail because username already exists', function(done) {
+    it('should fail because username already exists', (done) => {
         const user = {
             'username': 'Jodo',
             'firstname': 'John',
@@ -257,10 +274,12 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -271,7 +290,7 @@ describe('User creation :', function() {
             });
     });
 
-    it('should fail because email already exists', function(done) {
+    it('should fail because email already exists', (done) => {
         const user = {
             'username': 'Jodo2',
             'firstname': 'John',
@@ -282,10 +301,12 @@ describe('User creation :', function() {
         };
         chai
             .request(server)
-            .post('/users')
+            .post('/user')
             .send(user)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -298,9 +319,8 @@ describe('User creation :', function() {
 });
 
 
-describe('Authentication :', function() {
-
-    it('should fail because username or password is missing, username does not exist, or wrong password', function(done) {
+describe('Authentication :', () => {
+    it('should fail because username or password is missing, username does not exist, or wrong password', (done) => {
         const credentials = {
             'username': 'Jodo',
             'password': 'EpiBlog42'
@@ -309,8 +329,10 @@ describe('Authentication :', function() {
             .request(server)
             .post('/authenticate')
             .send(credentials)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -321,7 +343,7 @@ describe('Authentication :', function() {
             });
     });
 
-    it('should be successfull and return a json web token', function(done) {
+    it('should be successfull and return a json web token', (done) => {
         const credentials = {
             'username': 'Jodo',
             'password': 'EpiBlog42!'
@@ -330,8 +352,10 @@ describe('Authentication :', function() {
             .request(server)
             .post('/authenticate')
             .send(credentials)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -348,14 +372,15 @@ describe('Authentication :', function() {
 
 });
 
-describe('Getting my information :', function() {
-
-    it('should fail because token is missing', function(done) {
+describe('Getting my information :', () => {
+    it('should fail because token is missing', (done) => {
         chai
             .request(server)
-            .post('/me')
-            .end(function(err, res) {
-                if (err) throw err;
+            .get('/me')
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -366,14 +391,16 @@ describe('Getting my information :', function() {
             });
     });
 
-    it('should fail because token is wrong', function(done) {
+    it('should fail because token is wrong', (done) => {
         const token = 'badtoken';
         chai
             .request(server)
-            .post('/me')
+            .get('/me')
             .set('x-authentication-token', token)
-            .end(function(err, res) {
-                if (err) throw err;
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -384,13 +411,15 @@ describe('Getting my information :', function() {
             });
     });
 
-    it('should be successfull', function(done) {
+    it('should be successfull', (done) => {
         chai
             .request(server)
             .get('/me')
-            .set('x-authentication-token', token)
-            .end(function(err, res) {
-                if (err) throw err;
+            .set('x-authentication-token', globals.token)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');
@@ -414,15 +443,16 @@ describe('Getting my information :', function() {
     });
 });
 
-describe.skip('Updating user profile :', function() {
-
-    it('should fail because field is missing', function(done) {
+describe.skip('Updating user profile :', () => {
+    it('should fail because field is missing', (done) => {
         chai
             .request(server)
-            .patch('/users')
-            .send(token)
-            .end(function(err, res) {
-                if (err) throw err;
+            .patch('/user')
+            .send(globals.token)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
                 res.should.be.a('object');
                 res.should.have.property('body');
                 res.body.should.be.a('object');

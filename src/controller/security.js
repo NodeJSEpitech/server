@@ -1,4 +1,4 @@
-const database = require('../model/database'),
+const database = require('../service/database'),
     jwt = require('jsonwebtoken'),
     hasher = require('password-hash'),
     {secret} = require('../../config/parameters'),
@@ -33,26 +33,6 @@ function authenticate(request, response) {
     }
 }
 
-function check(request, response, next) {
-    const token = request.headers['x-authentication-token'];
-
-    if (!token) {
-        response.status(status.ko.badrequest).json({'message': messages.error.security.missing_token});
-    } else {
-        jwt.verify(token, secret, (error, user) => {
-            if (error) {
-                response.status(status.ko.unauthorized).json({'message': messages.error.security.unauthorized});
-            } else {
-                request.user = user;
-                next();
-                return 1;
-            }
-            return 0;
-        });
-    }
-}
-
 module.exports = {
-    'authenticate': authenticate,
-    'check': check
+    'authenticate': authenticate
 };

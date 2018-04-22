@@ -1,74 +1,49 @@
-const database = require('../model/database.js'),
+const database = require('../service/database.js'),
     hasher = require('password-hash'),
+    joi = require('joi'),
     {status, messages, regexps} = require('../../config/variables');
 
 
-function isValidEmail(email) {
-    return regexps.email.test(email);
-}
-
-function isValidPassword(password) {
-    return regexps.password.test(password);
-}
-
 function create(request, response) {
-    const {
-        username,
-        firstname,
-        lastname,
-        email,
-        password,
-        passwordConfirmation
-    } = request.body;
-    let message = '';
+    const schema = {
+            'username': joi.string().alphanum().min(4).max(30).required(),
+            'firstname': joi.string().required(),
+            'lastname': joi.string().required(),
+            'email': joi.string().email().required(),
+            'password': joi.string().regex(regexps.password).required(),
+            'passwordConfirmation': joi.string().required()
+        },
+        validation = joi.validate(request.body, schema);
 
-    if (!username) {
-        message = messages.error.user.create.missing_parameter.replace('%parameter%', 'username');
-    } else if (!firstname) {
-        message = messages.error.user.create.missing_parameter.replace('%parameter%', 'firstname');
-    } else if (!lastname) {
-        message = messages.error.user.create.missing_parameter.replace('%parameter%', 'lastname');
-    } else if (!email) {
-        message = messages.error.user.create.missing_parameter.replace('%parameter%', 'email');
-    } else if (isValidEmail(email) === false) {
-        message = messages.error.user.create.invalid_email;
-    } else if (!password) {
-        message = messages.error.user.create.missing_parameter.replace('%parameter%', 'password');
-    } else if (isValidPassword(password) === false) {
-        message = messages.error.user.create.invalid_password;
-    } else if (!passwordConfirmation) {
-        message = messages.error.user.create.missing_parameter.replace('%parameter%', 'passwordConfirmation');
-    } else if (password !== passwordConfirmation) {
-        message = messages.error.user.create.password_confirmation;
-    } else {
-        database.findBy('user', {'username': username}, 1).then((usernames) => {
-            if (usernames.length > 0) {
-                response.status(status.ko.badrequest).json({'message': messages.error.user.create.username_exists});
-            } else {
-                database.findBy('user', {'email': email}).then((emails) => {
-                    if (emails.length > 0) {
-                        response.status(status.ko.badrequest).json({'message': messages.error.user.create.email_exists});
-                    } else {
-                        database.insert('user', {
-                            'username': username,
-                            'firstname': firstname,
-                            'lastname': lastname,
-                            'email': email,
-                            'password': hasher.generate(password)
-                        }).then((users) => {
-                            if (users.affectedRows === 0) {
-                                response.status(status.ko.server).json({'message': messages.error.fallback});
-                            } else {
-                                response.status(status.ok).json({'message': messages.success.user.create});
-                            }
-                        });
-                    }
-                });
-            }
-        });
-        return;
+    if (validation.error || validation.value.password !== validation.value.passwordConfirmation) {
+        return response.status(status.ko.badrequest).json({'message': messages.error.user.create.bad_parameter});
     }
-    response.status(status.ko.badrequest).json({'message': message});
+    database.findBy('user', {'username': validation.value.username}, 1).then((usernames) => {
+        if (usernames.length > 0) {
+            return response.status(status.ko.badrequest).json({'message': messages.error.user.create.username_exists});
+        }
+        database.findBy('user', {'email': validation.value.email}).then((emails) => {
+            if (emails.length > 0) {
+                return response.status(status.ko.badrequest).json({'message': messages.error.user.create.email_exists});
+            }
+            database.insert('user', {
+                'username': validation.value.username,
+                'firstname': validation.value.firstname,
+                'lastname': validation.value.lastname,
+                'email': validation.value.email,
+                'password': hasher.generate(validation.value.password)
+            }).then((users) => {
+                if (users.affectedRows === 0) {
+                    return response.status(status.ko.server).json({'message': messages.error.fallback});
+                }
+                response.status(status.ok).json({'message': messages.success.user.create});
+                return true;
+            });
+            return true;
+        });
+        return true;
+    });
+    return true;
 }
 
 function get(request, response) {
