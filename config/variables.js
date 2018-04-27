@@ -43,12 +43,12 @@ module.exports = {
                     'unauthorized': 'You are not administrator, you can not update an other account'
                 },
                 'update': {
-                    'missing_parameter': 'Parameter %parameter% is missing',
-                    'not_administrator': 'You are unauthorized to access other user\'s account information',
-                    'bad_parameter': 'You can\'t modify the field %field%'
+                    'bad_parameter': 'Bad parameter',
+                    'not_administrator': 'You are unauthorized to access other user\'s account information'
                 },
                 'remove': {
-                    'unauthorized': 'You are not administrator, you can not delete an other account'
+                    'bad_parameter': 'Bad parameter',
+                    'not_administrator': 'You are unauthorized to remove other user\'s account'
                 }
             }
         }

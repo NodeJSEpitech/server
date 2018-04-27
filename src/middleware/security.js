@@ -14,9 +14,9 @@ function check(request, response, next) {
             } else {
                 request.user = user;
                 next();
-                return 1;
+                return true;
             }
-            return 0;
+            return false;
         });
     }
 }

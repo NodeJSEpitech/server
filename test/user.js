@@ -1,3 +1,4 @@
+// eslint-disable-line max-lines
 const chai = require('chai'),
     should = chai.should(), // eslint-disable-line no-unused-vars
     chaitHttp = require('chai-http'),
@@ -438,17 +439,167 @@ describe('Getting my information :', () => {
                 res.body.data.should.have.property('password');
                 res.body.data.password.should.be.equal('hidden');
                 res.should.have.status(status.ok);
+                globals.user = res.body.data;
                 done();
             });
     });
 });
 
-describe.skip('Updating user profile :', () => {
+describe('Updating user profile :', () => {
+    it('should fail because me not owner of account target and not administrator', (done) => {
+        chai
+            .request(server)
+            .patch(`/user/${globals.users.id + 1}`)
+            .set('x-authentication-token', globals.token)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
+                res.should.be.a('object');
+                res.should.have.property('body');
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.message.should.be.equal(messages.error.user.update.not_administrator);
+                res.should.have.status(status.ko.unauthorized);
+                done();
+            });
+    });
+
     it('should fail because field is missing', (done) => {
         chai
             .request(server)
-            .patch('/user')
-            .send(globals.token)
+            .patch(`/user/${globals.users.id}`)
+            .set('x-authentication-token', globals.token)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
+                res.should.be.a('object');
+                res.should.have.property('body');
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.message.should.be.equal(messages.error.user.update.bad_parameter);
+                res.should.have.status(status.ko.badrequest);
+                done();
+            });
+    });
+
+    it('should fail because value is missing', (done) => {
+        const data = {
+            'field': 'id'
+        };
+        chai
+            .request(server)
+            .patch(`/user/${globals.user.id}`)
+            .set('x-authentication-token', globals.token)
+            .send(data)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
+                res.should.be.a('object');
+                res.should.have.property('body');
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.message.should.be.equal(messages.error.user.update.bad_parameter);
+                res.should.have.status(status.ko.badrequest);
+                done();
+            });
+    });
+
+    it('should fail because field can\t be modified', (done) => {
+        const data = {
+            'field': 'id',
+            'value': '42'
+        };
+        chai
+            .request(server)
+            .patch(`/user/${globals.user.id}`)
+            .set('x-authentication-token', globals.token)
+            .send(data)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
+                res.should.be.a('object');
+                res.should.have.property('body');
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.message.should.be.equal(messages.error.user.update.bad_parameter);
+                res.should.have.status(status.ko.badrequest);
+                done();
+            });
+    });
+
+    it('should successfully update firstname', (done) => {
+        const data = {
+            'field': 'firstname',
+            'value': 'Johnattan'
+        };
+        chai
+            .request(server)
+            .patch(`/user/${globals.user.id}`)
+            .set('x-authentication-token', globals.token)
+            .send(data)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
+                res.should.be.a('object');
+                res.should.have.property('body');
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.message.should.be.equal(messages.success.user.update);
+                res.should.have.status(status.ok);
+                done();
+            });
+    });
+});
+
+describe('Removing user :', () => {
+    it('should fail because me not owner of account target and not administrator', (done) => {
+        chai
+            .request(server)
+            .delete(`/user/${globals.users.id + 1}`)
+            .set('x-authentication-token', globals.token)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
+                res.should.be.a('object');
+                res.should.have.property('body');
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.message.should.be.equal(messages.error.user.remove.not_administrator);
+                res.should.have.status(status.ko.unauthorized);
+                done();
+            });
+    });
+
+    it('should be successful', (done) => {
+        chai
+            .request(server)
+            .patch(`/user/${globals.users.id}`)
+            .set('x-authentication-token', globals.token)
+            .end((err, res) => {
+                if (err) {
+                    throw err;
+                }
+                res.should.be.a('object');
+                res.should.have.property('body');
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.message.should.be.equal(messages.success.user.remove);
+                res.should.have.status(status.ok);
+                done();
+            });
+    });
+
+    it('should fail because token is now invalid', (done) => {
+        chai
+            .request(server)
+            .patch(`/user/${globals.users.id}`)
+            .set('x-authentication-token', globals.token)
             .end((err, res) => {
                 if (err) {
                     throw err;
@@ -462,5 +613,4 @@ describe.skip('Updating user profile :', () => {
                 done();
             });
     });
-
 });

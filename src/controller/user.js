@@ -16,15 +16,18 @@ function create(request, response) {
         validation = joi.validate(request.body, schema);
 
     if (validation.error || validation.value.password !== validation.value.passwordConfirmation) {
-        return response.status(status.ko.badrequest).json({'message': messages.error.user.create.bad_parameter});
+        response.status(status.ko.badrequest).json({'message': messages.error.user.create.bad_parameter});
+        return false;
     }
     database.findBy('user', {'username': validation.value.username}, 1).then((usernames) => {
         if (usernames.length > 0) {
-            return response.status(status.ko.badrequest).json({'message': messages.error.user.create.username_exists});
+            response.status(status.ko.badrequest).json({'message': messages.error.user.create.username_exists});
+            return false;
         }
         database.findBy('user', {'email': validation.value.email}).then((emails) => {
             if (emails.length > 0) {
-                return response.status(status.ko.badrequest).json({'message': messages.error.user.create.email_exists});
+                response.status(status.ko.badrequest).json({'message': messages.error.user.create.email_exists});
+                return false;
             }
             database.insert('user', {
                 'username': validation.value.username,
@@ -34,7 +37,8 @@ function create(request, response) {
                 'password': hasher.generate(validation.value.password)
             }).then((users) => {
                 if (users.affectedRows === 0) {
-                    return response.status(status.ko.server).json({'message': messages.error.fallback});
+                    response.status(status.ko.server).json({'message': messages.error.fallback});
+                    return false;
                 }
                 response.status(status.ok).json({'message': messages.success.user.create});
                 return true;
@@ -52,45 +56,56 @@ function get(request, response) {
 
     if (user.id !== id && !user.is_administrator) {
         response.status(status.ko.unauthorized).json({'message': messages.error.user.get.unauthorized});
-        return;
+        return false;
     }
     database.findBy('user', {'id': id}, 1).then((results) => {
         if (results.length !== 1) {
             response.status(status.ko.badrequest).json({'message': messages.error.user.get.not_found});
-            return;
+            return false;
         }
         response.status(status.ok).json({
             'message': messages.success.user,
             'data': results[0]
         });
+        return true;
     });
+    return true;
 }
 
 function update(request, response) {
     const user = request.user,
         {id} = request.params,
-        {field, value} = request.body,
+        schema = {
+            'field': joi.string().required(),
+            'value': joi.required()
+        },
+        validation = joi.validate(request.body, schema),
+        {field, value} = validation.value,
         fields = ['id', 'is_administrator', 'created_at', 'password'],
         data = [];
-    let message = null;
 
-    if (!field || !value) {
-        message = messages.error.user.update.missing_parameter.replace('%parameter%', !field ? 'field' : 'value');
-        response.status(status.ko.badrequest).json({'message': message});
-        return;
+    if (validation.error) {
+        response.status(status.ko.badrequest).json({'message': messages.error.user.update.bad_parameter});
+        return false;
     }
     if (fields.includes(field)) {
-        message = messages.error.user.update.bad_parameter.replace('%field%', field);
-        response.status(status.ko.badrequest).json({'message': message});
-        return;
+        response.status(status.ko.badrequest).json({'message': messages.error.user.update.bad_parameter});
+        return false;
     }
-    data[field] = value;
     if (user.id !== id && !user.is_administrator) {
         response.status(status.ko.unauthorized).json({'message': messages.error.user.update.not_administrator});
-        return;
+        return false;
     }
-    database.update('user', data, {'id': id});
-    response.status(status.ok).json({'message': messages.success.user.update});
+    data[field] = value;
+    database.update('user', data, {'id': id}).then((users) => {
+        if (users.affectedRows === 0) {
+            response.status(status.ko.server).json({'message': messages.error.user.update.bad_parameter});
+            return false;
+        }
+        response.status(status.ok).json({'message': messages.success.user.update});
+        return true;
+    });
+    return true;
 }
 
 function remove(request, response) {
@@ -98,11 +113,18 @@ function remove(request, response) {
         {id} = request.params;
 
     if (user.id !== id && !user.is_administrator) {
-        response.status(status.ko.unauthorized).json({'message': messages.error.user.remove.unauthorized});
-        return;
+        response.status(status.ko.unauthorized).json({'message': messages.error.user.remove.not_administrator});
+        return false;
     }
-    database.remove('user', {'id': id});
-    response.status(status.ok).json({'message': messages.success.user.remove});
+    database.remove('user', {'id': id}).then((users) => {
+        if (users.affectedRows === 0) {
+            response.status(status.ko.server).json({'message': messages.error.user.remove.bad_parameter});
+            return false;
+        }
+        response.status(status.ok).json({'message': messages.success.user.remove});
+        return true;
+    });
+    return true;
 }
 
 module.exports = {
