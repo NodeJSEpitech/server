@@ -5,18 +5,21 @@ function getFinalTable(table) {
     return env === 'test' ? `${table}_test` : table;
 }
 
-function findBy(table, wheres = null, limit = null) {
+function findBy(table, where = null, limit = null, orderBy = null) {
     const criteria = [],
         finalTable = getFinalTable(table);
     let criterion = null,
-        where = '',
-        finalLimit = '';
+        finalWhere = finalOrderBy = finalLimit = '';
 
-    if (wheres !== null) {
-        for (criterion in wheres) {
-            criteria.push(`${criterion}='${wheres[criterion]}'`);
+    if (where !== null) {
+        if (isObject(where) === true) {
+            for (criterion in where) {
+                criteria.push(`${criterion}='${where[criterion]}'`);
+            }
+            finalWhere = `WHERE ${criteria.join(' AND ')}`;
+        } else if (typeof where === 'string') {
+            finalWhere = `WHERE ${where}`;
         }
-        where = `WHERE ${criteria.join(' AND ')}`;
     }
 
     if (limit !== null) {
@@ -24,7 +27,7 @@ function findBy(table, wheres = null, limit = null) {
     }
 
     return new Promise((resolve, reject) => {
-        connection.query(`SELECT * FROM ${finalTable} ${where} ${finalLimit}`, (error, rows) => {
+        connection.query(`SELECT * FROM ${finalTable} ${finalWhere} ${finalLimit} ${finalOrderBy}`, (error, rows) => {
             if (error) {
                 return reject(error);
             }
@@ -33,11 +36,11 @@ function findBy(table, wheres = null, limit = null) {
     });
 }
 
-function insert(table, wheres) {
+function insert(table, values) {
     const finalTable = getFinalTable(table);
 
     return new Promise((resolve, reject) => {
-        connection.query(`INSERT INTO ${finalTable} SET ?`, wheres, (error, rows) => {
+        connection.query(`INSERT INTO ${finalTable} SET ?`, values, (error, rows) => {
             if (error) {
                 return reject(error);
             }
@@ -46,21 +49,25 @@ function insert(table, wheres) {
     });
 }
 
-function update(table, values, wheres = null) {
+function update(table, values, where = null) {
     const criteria = [],
         finalTable = getFinalTable(table);
     let criterion = null,
-        where = '';
+        finalWhere = '';
 
-    if (wheres !== null) {
-        for (criterion in wheres) {
-            criteria.push(`${criterion}='${wheres[criterion]}'`);
+    if (where !== null) {
+        if (isObject(where) === true) {
+            for (criterion in where) {
+                criteria.push(`${criterion}='${where[criterion]}'`);
+            }
+            finalWhere = `WHERE ${criteria.join(' AND ')}`;
+        } else if (typeof where === 'string') {
+            finalWhere = `WHERE ${where}`;
         }
-        where = `WHERE ${criteria.join(' AND ')}`;
     }
 
     return new Promise((resolve, reject) => {
-        connection.query(`UPDATE ${finalTable} SET ? ${where}`, values, (error, rows) => {
+        connection.query(`UPDATE ${finalTable} SET ? ${finalWhere}`, values, (error, rows) => {
             if (error) {
                 return reject(error);
             }
@@ -69,21 +76,25 @@ function update(table, values, wheres = null) {
     });
 }
 
-function remove(table, wheres = null) {
+function remove(table, where = null) {
     const criteria = [],
         finalTable = getFinalTable(table);
     let value = null,
-        where = '';
+        finalWhere = '';
 
-    if (wheres !== null) {
-        for (value in wheres) {
-            criteria.push(`${value}='${wheres[value]}'`);
+    if (where !== null) {
+        if (isObject(where) === true) {
+            for (criterion in where) {
+                criteria.push(`${criterion}='${where[criterion]}'`);
+            }
+            finalWhere = `WHERE ${criteria.join(' AND ')}`;
+        } else if (typeof where === 'string') {
+            finalWhere = `WHERE ${where}`;
         }
-        where = `WHERE ${criteria.join(' AND ')}`;
     }
 
     return new Promise((resolve, reject) => {
-        connection.query(`DELETE FROM ${finalTable} ${where}`, (error, rows) => {
+        connection.query(`DELETE FROM ${finalTable} ${finalWhere}`, (error, rows) => {
             if (error) {
                 return reject(error);
             }
