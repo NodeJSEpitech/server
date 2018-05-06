@@ -4,8 +4,8 @@ const joi = require('joi'),
 
 function create(request, response) {
     const schema = {
-            'title': joi.string().min(8).max(64).required(),
-            'description': joi.string().optional(),
+            'title': joi.string().min(8).max(32).required(),
+            'description': joi.string().min(8).max(128).optional(),
             'content': joi.string().required()
         },
         validation = joi.validate(request.body, schema),
@@ -67,11 +67,7 @@ function update(request, response) {
         where = {'id': id},
         data = {};
 
-    if (validation.error) {
-        response.status(status.ko.badrequest).json({'message': messages.error.post.update.bad_parameter});
-        return false;
-    }
-    if (fields.includes(field)) {
+    if (validation.error || fields.includes(field)) {
         response.status(status.ko.badrequest).json({'message': messages.error.post.update.bad_parameter});
         return false;
     }

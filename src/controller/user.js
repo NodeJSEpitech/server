@@ -83,11 +83,7 @@ function update(request, response) {
         {field, value} = validation.value,
         data = {};
 
-    if (validation.error) {
-        response.status(status.ko.badrequest).json({'message': messages.error.user.update.bad_parameter});
-        return false;
-    }
-    if (fields.includes(field)) {
+    if (validation.error || fields.includes(field)) {
         response.status(status.ko.badrequest).json({'message': messages.error.user.update.bad_parameter});
         return false;
     }
