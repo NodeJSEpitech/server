@@ -1,12 +1,11 @@
 const router = require('express').Router(), // eslint-disable-line new-cap
+    security = require('../middleware/security'),
     controller = require('../controller/user');
-
-router.get('/user/:id(\d+)', controller.get);
 
 router.post('/user', controller.create);
 
-router.patch('/user/:id(\d+)', controller.update);
-
-router.delete('/user/:id(\d+)', controller.remove);
+router.get('/user/:id', security.check, controller.get);
+router.patch('/user/:id', security.check, controller.update);
+router.delete('/user/:id', security.check, controller.remove);
 
 module.exports = router;

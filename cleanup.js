@@ -2,6 +2,14 @@ const {connection} = require('./src/middleware/database'),
     database = require('./src/service/database');
 
 database
-    .remove('user')
-    .then(() => connection.end())
-    .catch(() => connection.end());
+    .remove('user', null, false)
+    .then(() => {
+        database
+            .remove('post', null, false)
+            .then(() => {
+                connection.end();
+            })
+    })
+    .catch(() => {
+        connection.end();
+    });

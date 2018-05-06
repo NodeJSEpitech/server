@@ -7,20 +7,22 @@ const mysql = require('mysql'),
         'database': parameters.db_name
     });
 
-function connect() {
-    pool.getConnection((err, connection) => {
-        if (err) {
+function connect(request, response, next) {
+    pool.getConnection((error, connection) => {
+        if (error) {
             if (connection) {
                 connection.release();
             }
             throw new Error('Database connection error');
         }
+        next();
     });
 }
 
-function disconnect() {
+function disconnect(request, response, next) {
     pool.end((error) => {
         console.log(error ? error : "No error");
+        next();
     });
 }
 

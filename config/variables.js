@@ -11,18 +11,26 @@ module.exports = {
     'messages': {
         'success': {
             'welcome': {
-                'unauth': 'Welcome to EpiBlog API server [unauthenticated]',
+                'unauth': 'Welcome to EpiBlog API server',
                 'auth': 'Welcome to EpiBlog API server [authenticated]'
             },
             'security': {
-                'authenticated': 'You are successfully authenticated'
+                'authenticated': 'You are successfully authenticated',
+                'logout': 'You are successfully logged out'
             },
             'user': {
                 'create': 'Account successfully created',
                 'get': 'User successfully retrieved',
                 'update': 'User successfully updated',
                 'remove': 'User successfully removed'
+            },
+            'post': {
+                'create': 'Post successfully created',
+                'get': 'Post successfully retrieved',
+                'update': 'Post successfully updated',
+                'remove': 'Post successfully removed'
             }
+
         },
         'error': {
             'fallback': 'An error occurred',
@@ -34,9 +42,7 @@ module.exports = {
             'user': {
                 'create': {
                     'bad_parameter': 'Bad parameter',
-                    'password_confirmation': 'Password confirmation does not match password',
-                    'username_exists': 'Username already exists',
-                    'email_exists': 'Email already exists'
+                    'account_exists': 'Username or email already exists'
                 },
                 'get': {
                     'not_found': 'User not found',
@@ -49,6 +55,23 @@ module.exports = {
                 'remove': {
                     'bad_parameter': 'Bad parameter',
                     'not_administrator': 'You are unauthorized to remove other user\'s account'
+                }
+            },
+            'post': {
+                'create': {
+                    'bad_parameter': 'Bad parameter'
+                },
+                'get': {
+                    'not_found': 'Post not found'
+                },
+                'update': {
+                    'bad_parameter': 'Bad parameter',
+                    'not_administrator': 'You are not the creator of this post'
+                },
+                'remove': {
+                    'bad_parameter': 'Bad parameter',
+                    'not_found': 'Post not found',
+                    'not_administrator': 'You are not the creator of this post'
                 }
             }
         }
