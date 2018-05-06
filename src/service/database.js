@@ -14,7 +14,7 @@ function findBy(table, where = null, limit = null, orderBy = null, softdeletable
         finalOrderBy = '';
 
     if (softdeletable === true) {
-        finalWhere = where === null ? 'WHERE deleted_at IS NULL' : 'deleted_at IS NULL AND '
+        finalWhere = where === null ? 'WHERE deleted_at IS NULL' : 'deleted_at IS NULL AND ';
     }
     if (where !== null) {
         if (typeof where === 'object') {
@@ -68,7 +68,7 @@ function update(table, values, where = null, softdeletable = true) {
         finalWhere = '';
 
     if (softdeletable === true) {
-        finalWhere = where === null ? 'WHERE deleted_at IS NULL' : 'deleted_at IS NULL AND '
+        finalWhere = where === null ? 'WHERE deleted_at IS NULL' : 'deleted_at IS NULL AND ';
     }
     if (where !== null) {
         if (typeof where === 'object') {
@@ -108,7 +108,6 @@ function remove(table, where = null, softdeletable = true) {
         }
     }
     if (softdeletable === true) {
-        console.log(">>>> SOFTDELETABLE");
         sql = `UPDATE ${finalTable} SET deleted_at = CURRENT_TIMESTAMP() ${finalWhere}`;
     } else {
         sql = `DELETE FROM ${finalTable} ${finalWhere}`;
