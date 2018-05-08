@@ -18,7 +18,7 @@ function handleConnection(ws) {
         }
     });
     ws.on('close', () => {
-        for (let client in clients) {
+        for (const client in clients) {
             if (clients[client] === ws) {
                 clients.splice(client, 1);
             }

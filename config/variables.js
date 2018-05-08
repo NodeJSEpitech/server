@@ -7,7 +7,7 @@ module.exports = {
             'unauthorized': 403,
             'notfound': 404,
             'server': 500
-        },
+        }
     },
     'messages': {
         'success': {

@@ -1,5 +1,5 @@
 const chai = require('chai'),
-    websocket = require('ws'),
+    WebSocket = require('ws'),
     server = require('../src/server'),
     parameters = require('../config/parameters'),
     {status, messages} = require('../config/variables');
@@ -41,7 +41,7 @@ describe('Comment post', () => {
                             .set('x-authentication-token', token)
                             .end((error2, response2) => {
                                 const postId = response2.body.data.id,
-                                    ws = new websocket(`ws://localhost:${parameters.wsPort}`),
+                                    ws = new WebSocket(`ws://localhost:${parameters.wsPort}`),
                                     request = {
                                         'x-method': 'post',
                                         'x-post-id': postId,
@@ -93,7 +93,7 @@ describe('Comment post', () => {
                     .send(credentials)
                     .end((error1, response1) => {
                         const token = response1.body.data.token,
-                            ws = new websocket(`ws://localhost:${parameters.wsPort}`),
+                            ws = new WebSocket(`ws://localhost:${parameters.wsPort}`),
                             request = {
                                 'x-method': 'post',
                                 'x-post-id': null,
@@ -123,7 +123,7 @@ describe('Comment post', () => {
     });
 
     it('should successfully send a message without being authenticated', (done) => {
-        const ws = new websocket(`ws://localhost:${parameters.wsPort}`),
+        const ws = new WebSocket(`ws://localhost:${parameters.wsPort}`),
             request = {
                 'x-method': 'post',
                 'x-post-id': null,

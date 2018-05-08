@@ -86,12 +86,10 @@ function postMessage(ws, request, clients) {
 function handleRequest(ws, request, clients) {
     if (request.method === 'get') {
         getComments(ws, request);
+    } else if (request.post === null) {
+        postMessage(ws, request, clients);
     } else {
-        if (request.post === null) {
-            postMessage(ws, request, clients);
-        } else {
-            postComment(ws, request);
-        }
+        postComment(ws, request);
     }
 }
 

@@ -1,5 +1,5 @@
 const chai = require('chai'),
-    websocket = require('ws'),
+    WebSocket = require('ws'),
     server = require('../src/server'),
     parameters = require('../config/parameters'),
     {status, messages} = require('../config/variables');
@@ -41,7 +41,7 @@ describe('Comment get', () => {
                             .set('x-authentication-token', token)
                             .end((error2, response2) => {
                                 const postId = response2.body.data.id,
-                                    ws = new websocket(`ws://localhost:${parameters.wsPort}`),
+                                    ws = new WebSocket(`ws://localhost:${parameters.wsPort}`),
                                     request = {
                                         'x-request-id': 1301,
                                         'x-method': 'get',
