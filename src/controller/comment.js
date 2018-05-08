@@ -21,8 +21,7 @@ function getComments(ws, request) {
         comment = database.getFinalTable('comment');
 
     database
-        .query(`SELECT u.firstname AS firstname, u.lastname AS lastname, u.avatar AS avatar,
-                c.content AS content, c.created_at AS created_at
+        .query(`SELECT u.username AS username, u.avatar AS avatar, c.content AS content, c.created_at AS created_at
                 FROM ${comment} AS c INNER JOIN ${user} AS u ON c.creator_id = u.id
                 WHERE c.post_id = ${mysql.escape(request.post)} AND c.deleted_at IS NULL
                 ORDER BY created_at DESC`)

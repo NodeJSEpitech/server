@@ -9,6 +9,7 @@ It allows the client of the same project to interact with a mysql database, in o
 ### Built with
 
 - [express](http://expressjs.com/) : a nodejs web framework
+- [ws](https://github.com/websockets/ws) : a nodejs WebSocket library
 - [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) : an implementation of JSON Web Tokens
 - [joi](https://github.com/hapijs/joi) : a javascript objects validator
 - [mysql](https://github.com/mysqljs/mysql) : a nodejs driver for mysql
@@ -23,7 +24,7 @@ Run the command `npm run test` to launch the tests.
 
 ### Usage
 
-Every route returns a json response, with the following format :
+Every **HTTP route** returns a json response, with the following format :
 ```ecmascript 6
 const response = {
     message: '[An adequate message depending on the requested route and the response code]',
@@ -35,7 +36,35 @@ This token can be retrieved via the `POST /authenticate` route (see below).
 For every route requiring a token in the headers, the error response codes and associated reasons are the same as
 described in the `GET /me` route (see below).  
 If an error occurred internally, the response code is `500` with a fallback message, but the server should continue
-running.
+running.  
+
+The **WebSocket server** is used only for comments :
+- to get all the comments of a specific post (user can be unauthenticated)
+- to post a comment on a post (user has to be authenticated)
+- to post a message on the global chat (user can be unauthenticated)  
+The message should look like as follow :
+```ecmascript 6
+const request = {
+    'x-request-id': '[An element that will be returned to the client]', // optional
+    'x-method': /^(get|post)$/,
+    'x-post-id': '[The post id for the comment]', // depends
+    'x-username': '[A username]', // depends
+    'x-authenticated-token': '[The user jwt]' // depends
+    'body': '[The content of the comment]' // depends
+}
+WebSocket.send(JSON.stringify(request));
+```
+Server side, the message will be parsed with the `JSON.parse` method.  
+Any error on the server (like a bad json message stringified, a bad request, a database server) will send a stringified
+json message as follow :
+```ecmascript 6
+const response = {
+    'status': /^400|403|500$/,
+    'message': '[An explicit message]'
+};
+WebSocketServer.send(JSON.stringify(response));
+```
+More details below.
 
 
 
@@ -191,6 +220,77 @@ Header : `x-authenticated-token`
     - the `id` was not found in the database
 
 
+
+#### Get all the comments of a specific post  
+The request will respect the following format :
+```ecmascript 6
+const request = {
+    'x-request-id': '[An optionnal arbitrary id]', //optional
+    'x-method': 'get',
+    'x-post-id': '[The post id for the comment]',
+}
+```
+The server will return the following response when it succeeds :
+```ecmascript 6
+const response = {
+    'x-request-id': request.id, // optional
+    'status': 200,
+    'message': '[An explicit message]',
+    'data': [{
+        'username': '[The username of the comment\'s author]',
+        'avatar': '[null, or the comment\'s author avatar]',
+        'content': '[The comment content]',
+        'created_at': '[The comment timestamp of its creation date]'
+    }, {
+        // same object for an other comment
+//  }, ...
+    }]
+}
+```
+
+
+
+#### Post a comment on a specific post  
+The request will respect the following format :
+```ecmascript 6
+const request = {
+    'x-request-id': '[An optionnal arbitrary id]', //optional
+    'x-method': 'post',
+    'x-post-id': '[The post id for the comment]',
+    'x-authenticated-token': '[A valid jwt]',
+    'body': '[The comment content]'
+}
+```
+The value of the json web token can be retrieved via the HTTP route `POST /authenticate`.  
+The server will return the following response when it succeeds :
+```ecmascript 6
+const response = {
+    'x-request-id': request.id, // optional
+    'status': 200,
+    'message': '[An explicit message]'
+}
+```
+
+
+
+#### Post a message on the global chat  
+The request will respect the following format :
+```ecmascript 6
+const request = {
+    'x-method': 'post',
+    'x-username': '[A username]', // optional
+    'x-authenticated-token': '[A valid jwt]', // mandatory, if no 'x-username'
+    'body': '[The message content]'
+}
+```
+The server will send the following message to every client when it succeeds :
+```ecmascript 6
+const response = {
+    'avatar': '[null, or the user avatar from the jwt]', // optional
+    'username': '[The username provided in x-username, or the user username from the jwt]',
+    'content': '[The message content]'
+}
+```
 
 
 
