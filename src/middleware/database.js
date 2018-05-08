@@ -1,10 +1,10 @@
 const mysql = require('mysql'),
     parameters = require('../../config/parameters'),
     pool = mysql.createPool({
-        'host': parameters.db_host,
-        'user': parameters.db_username,
-        'password': parameters.db_password,
-        'database': parameters.db_name
+        'host': parameters.dbHost,
+        'user': parameters.dbUsername,
+        'password': parameters.dbPassword,
+        'database': parameters.dbName
     });
 
 function connect(request, response, next) {
@@ -20,8 +20,7 @@ function connect(request, response, next) {
 }
 
 function disconnect(request, response, next) {
-    pool.end((error) => {
-        console.log(error ? error : "No error");
+    pool.end(() => {
         next();
     });
 }

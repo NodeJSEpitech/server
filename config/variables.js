@@ -1,12 +1,13 @@
 module.exports = {
     'status': {
         'ok': 200,
+        'nc': 204,
         'ko': {
-            'server': 500,
             'badrequest': 400,
             'unauthorized': 403,
-            'notfound': 404
-        }
+            'notfound': 404,
+            'server': 500
+        },
     },
     'messages': {
         'success': {
@@ -29,6 +30,10 @@ module.exports = {
                 'get': 'Post successfully retrieved',
                 'update': 'Post successfully updated',
                 'remove': 'Post successfully removed'
+            },
+            'comment': {
+                'get': 'Comments successfully retrieved',
+                'post': 'Comment successfully created'
             }
 
         },
@@ -73,11 +78,14 @@ module.exports = {
                     'not_found': 'Post not found',
                     'not_administrator': 'You are not the creator of this post'
                 }
+            },
+            'comment': {
+                'bad_request': 'Bad request'
             }
         }
     },
     'regexps': {
-        'email': /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        'method': /^(get|post)$/,
         'password': /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,15}$/
     }
 };

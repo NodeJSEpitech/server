@@ -5,6 +5,17 @@ function getFinalTable(table) {
     return env === 'test' ? `${table}_test` : table;
 }
 
+function query(sql) {
+    return new Promise((resolve, reject) => {
+        connection.query(sql, (error, rows) => {
+            if (error) {
+                return reject(error);
+            }
+            return resolve(rows);
+        });
+    });
+}
+
 function findBy(table, where = null, limit = null, orderBy = null, softdeletable = true) {
     const finalTable = getFinalTable(table);
     let criteria = [],
@@ -123,8 +134,10 @@ function remove(table, where = null, softdeletable = true) {
 }
 
 module.exports = {
-    "findBy": findBy,
-    "insert": insert,
-    "update": update,
-    "remove": remove
+    'getFinalTable': getFinalTable,
+    'query': query,
+    'findBy': findBy,
+    'insert': insert,
+    'update': update,
+    'remove': remove
 };
