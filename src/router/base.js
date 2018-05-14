@@ -5,6 +5,11 @@ const router = require('express').Router(), // eslint-disable-line new-cap
 
 router.use(parser.json());
 
+router.use((req, res, next) => {
+    res.set('access-control-allow-origin', '*');
+    next();
+});
+
 router.get('/', (request, response) => {
     response.status(status.ok).json({
         'message': messages.success.welcome.unauth

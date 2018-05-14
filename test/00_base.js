@@ -20,6 +20,10 @@ describe('Base route', () => {
                 response.body.should.be.a('object');
                 response.body.should.have.property('message');
                 response.body.message.should.be.equal(messages.success.welcome.unauth);
+                response.should.have.property('headers');
+                response.headers.should.be.a('object');
+                response.headers.should.have.property('access-control-allow-origin');
+                response.headers['access-control-allow-origin'].should.be.equal('*');
                 response.should.have.status(status.ok);
                 done();
             });

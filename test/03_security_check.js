@@ -101,6 +101,10 @@ describe('Security checker', () => {
                                 response2.body.data.should.have.property('created_at');
                                 response2.body.data.should.have.property('deleted_at');
                                 (response2.body.data.deleted_at === null).should.equal(true);
+                                response2.should.have.property('headers');
+                                response2.headers.should.be.a('object');
+                                response2.headers.should.have.property('access-control-allow-origin');
+                                response2.headers['access-control-allow-origin'].should.be.equal('*');
                                 response2.should.have.status(status.ok);
                                 done();
                             });
