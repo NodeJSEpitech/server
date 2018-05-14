@@ -1,6 +1,6 @@
 module.exports = {
-    'httpPort': process.env.PORT || 5000, // eslint-disable-line no-undef
-    'wsPort': (process.env.PORT || 5000) + 1, // eslint-disable-line no-undef
+    'httpPort': 5000, // eslint-disable-line no-undef
+    'wsPort': 5001, // eslint-disable-line no-undef
     'secret': 'ThisIsASecret',
     'dbHost': 'eu-cdbr-west-02.cleardb.net',
     'dbUsername': 'b193abe7cba0f0',
