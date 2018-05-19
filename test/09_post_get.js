@@ -122,6 +122,8 @@ describe('Post get', () => {
                                         response3.body.data.should.have.property('created_at');
                                         response3.body.data.should.have.property('deleted_at');
                                         (response3.body.data.deleted_at === null).should.be.equal(true);
+                                        response3.body.data.should.have.property('comments');
+                                        response3.body.data.comments.should.be.equal(0);
                                         response3.should.have.status(status.ok);
                                         done();
                                     });
