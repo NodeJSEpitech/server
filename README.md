@@ -49,7 +49,7 @@ const request = {
     'x-method': /^(get|post)$/,
     'x-post-id': '[The post id for the comment]', // depends
     'x-username': '[A username]', // depends
-    'x-authenticated-token': '[The user jwt]' // depends
+    'x-authentication-token': '[The user jwt]' // depends
     'body': '[The content of the comment]' // depends
 }
 WebSocket.send(JSON.stringify(request));
@@ -76,14 +76,14 @@ More details below.
 
 #### `GET /me`  
 Aim : to get the authenticated user's account information  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 - Code `403` (unauthorized) :
-    - the value of `x-authenticated-token` is invalid
+    - the value of `x-authentication-token` is invalid
     - user is not found in database
     - user has not logged in
     - user's account has been deleted
 - Code `400` (bad request) :
-    - `x-authenticated-token` is not provided in headers
+    - `x-authentication-token` is not provided in headers
 - Code `200` (success)  
     response.data contains user's account information : `{id: [user's id], firstname: [user's firstname], ...}`
 
@@ -105,7 +105,7 @@ Post data : `username` and `password`
 
 #### `GET /logout`  
 Aim : to log out the authenticated user  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 - Code `200`
 
 
@@ -132,7 +132,7 @@ Post data : `username`, `firstname`, `lastname`, `email`, `password`, `passwordC
 #### `GET /user/[:id]`  
 Aim : to get a user's account information  
 Route parameter : `id` (the user id)  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 - Code `403` :
     - the `id` is not the same compared to the token user's id and the token user is not administrator
 - Code `400` :
@@ -145,7 +145,7 @@ Header : `x-authenticated-token`
 #### `PATCH /user/[:id]`  
 Aim : to update a user's account  
 Route parameter : `id` (the user id)  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 Post data : `field` and `value`
 - Code `403` :
     - the `id` is not the same compared to the token user's id and the token user is not administrator
@@ -160,7 +160,7 @@ Post data : `field` and `value`
 #### `DELETE /user/[:id]`  
 Aim : to delete a user's account  
 Route parameter : `id` (the user id)  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 - Code `403` :
     - the `id` is not the same compared to the token user's id and the token user is not administrator
 - Code `400` :
@@ -170,7 +170,7 @@ Header : `x-authenticated-token`
 
 #### `POST /post`  
 Aim : to create a new post  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 Post data : `title`, `description` and `content`
 - Code `400` :
     - `title` is not provided, or is not at least 8 and at most 32 characters long
@@ -201,7 +201,7 @@ Route parameter : `id` (the post id)
 #### `PATCH /post/[:id]`  
 Aim : to update a post  
 Route parameter : `id` (the user id)  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 Post data : `field` and `value`
 - Code `400` :
     - the `creator_id` is not the same compared to the token user's id and the token user is not administrator
@@ -214,7 +214,7 @@ Post data : `field` and `value`
 #### `DELETE /post/[:id]`  
 Aim : to delete a post  
 Route parameter : `id` (the post id)  
-Header : `x-authenticated-token`
+Header : `x-authentication-token`
 - Code `400` :
     - the `creator_id` is not the same compared to the token user's id and the token user is not administrator
     - the `id` was not found in the database
@@ -257,7 +257,7 @@ const request = {
     'x-request-id': '[An optionnal arbitrary id]', //optional
     'x-method': 'post',
     'x-post-id': '[The post id for the comment]',
-    'x-authenticated-token': '[A valid jwt]',
+    'x-authentication-token': '[A valid jwt]',
     'body': '[The comment content]'
 }
 ```
@@ -279,7 +279,7 @@ The request will respect the following format :
 const request = {
     'x-method': 'post',
     'x-username': '[A username]', // optional
-    'x-authenticated-token': '[A valid jwt]', // mandatory, if no 'x-username'
+    'x-authentication-token': '[A valid jwt]', // mandatory, if no 'x-username'
     'body': '[The message content]'
 }
 ```
