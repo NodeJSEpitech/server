@@ -41,7 +41,7 @@ describe('Comment get', () => {
                             .set('x-authentication-token', token)
                             .end((error2, response2) => {
                                 const postId = response2.body.data.id,
-                                    ws = new WebSocket(`ws://localhost:${parameters.wsPort}`),
+                                    ws = new WebSocket(`ws://localhost:${parameters.port}`),
                                     request = {
                                         'x-request-id': 1301,
                                         'x-method': 'get',

@@ -14,23 +14,17 @@ const env = process.env.NODE_ENV, // eslint-disable-line no-undef
 
 console.log(`Working on environment ${env}`);
 
-// http server
 httpServer
     .use('/', base)
     .use('/', security)
     .use('/', user)
     .use('/', post);
 
-httpServer.listen(parameters.httpPort, () => {
-    console.log(`Http server listening on port ${parameters.httpPort}`);
-});
-
-// ws server
 wsServer
     .on('connection', comment.handleConnection);
 
-server.listen(parameters.wsPort, () => {
-    console.log(`WebSocket server listening on port ${parameters.wsPort}`);
+server.listen(parameters.port, () => {
+    console.log(`WebSocket and HTTP server listening on port ${parameters.port}`);
 });
 
 module.exports = httpServer;
