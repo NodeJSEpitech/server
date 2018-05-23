@@ -42,16 +42,13 @@ function get(request, response) {
         where = id ? `p.id = ${mysql.escape(id)}` : null,
         finalWhere = where === null ? 'p.deleted_at IS NULL' : `p.deleted_at IS NULL AND ${where}`,
         limit = id ? `LIMIT 1` : '',
-        orderBy = id ? '' : `ORDER BY p.created_at DESC`;
-
-    const sql = `
-        SELECT p.*, COUNT(c.id) AS comments FROM ${post} AS p
-        INNER JOIN ${comment} AS c ON c.post_id = p.id
-        WHERE ${finalWhere} ${limit} ${orderBy}
-    `;
+        orderBy = id ? '' : `ORDER BY p.created_at DESC`,
+        sql = `SELECT p.*, COUNT(c.id) AS comments FROM ${post} AS p
+                INNER JOIN ${comment} AS c ON c.post_id = p.id
+                WHERE ${finalWhere} ${limit} ${orderBy}`;
 
     database.query(sql).then((posts) => {
-        if (limit !== '' && (posts.length !== 1 || posts.length === 1 && posts[0].id === null)) {
+        if (limit !== '' && (posts.length !== 1 || (posts.length === 1 && posts[0].id === null))) {
             response.status(status.ko.badrequest).json({'message': messages.error.post.get.not_found});
             return false;
         }
@@ -61,18 +58,6 @@ function get(request, response) {
         });
         return true;
     });
-
-    // database.findBy('post', where, limit, orderBy).then((posts) => {
-    //     if (limit === 1 && posts.length !== 1) {
-    //         response.status(status.ko.badrequest).json({'message': messages.error.post.get.not_found});
-    //         return false;
-    //     }
-    //     response.status(status.ok).json({
-    //         'message': messages.success.post.get,
-    //         'data': limit === 1 ? posts[0] : posts
-    //     });
-    //     return true;
-    // });
     return false;
 }
 
