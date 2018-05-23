@@ -6,7 +6,9 @@ const router = require('express').Router(), // eslint-disable-line new-cap
 router.use(parser.json());
 
 router.use((req, res, next) => {
-    res.set('access-control-allow-origin', '*');
+    res
+        .set('access-control-allow-origin', '*')
+        .set('access-control-allow-headers', 'Content-Type');
     next();
 });
 
