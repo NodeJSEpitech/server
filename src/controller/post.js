@@ -39,22 +39,22 @@ function get(request, response) {
     const id = request.params.id ? parseInt(request.params.id, 10) : null,
         post = database.getFinalTable('post'),
         comment = database.getFinalTable('comment'),
-        where = id ? `p.id = ${mysql.escape(id)}` : null,
+        where = id !== null ? `p.id = ${mysql.escape(id)}` : null,
         finalWhere = where === null ? 'p.deleted_at IS NULL' : `p.deleted_at IS NULL AND ${where}`,
-        limit = id ? `LIMIT 1` : '',
-        orderBy = id ? '' : `ORDER BY p.created_at DESC`,
+        limit = id !== null ? `LIMIT 1` : '',
+        orderBy = id !== null ? '' : `ORDER BY p.created_at DESC`,
         sql = `SELECT p.*, COUNT(c.id) AS comments FROM ${post} AS p
-                INNER JOIN ${comment} AS c ON c.post_id = p.id
-                WHERE ${finalWhere} ${limit} ${orderBy}`;
+                LEFT JOIN ${comment} AS c ON c.post_id = p.id
+                WHERE ${finalWhere} GROUP BY p.id ${orderBy} ${limit}`;
 
     database.query(sql).then((posts) => {
-        if (limit !== '' && (posts.length !== 1 || (posts.length === 1 && posts[0].id === null))) {
+        if (id !== null && (posts.length !== 1 || (posts.length === 1 && posts[0].id === null))) {
             response.status(status.ko.badrequest).json({'message': messages.error.post.get.not_found});
             return false;
         }
         response.status(status.ok).json({
             'message': messages.success.post.get,
-            'data': limit !== '' ? posts[0] : posts
+            'data': id !== null ? posts[0] : posts
         });
         return true;
     });
