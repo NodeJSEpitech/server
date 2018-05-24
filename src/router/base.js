@@ -1,16 +1,11 @@
 const router = require('express').Router(), // eslint-disable-line new-cap
     parser = require('body-parser'),
     security = require('../middleware/security'),
+    middleware = require('../middleware/base'),
     {status, messages} = require('../../config/variables');
 
 router.use(parser.json());
-
-router.use((req, res, next) => {
-    res
-        .set('access-control-allow-origin', '*')
-        .set('access-control-allow-headers', 'Content-Type');
-    next();
-});
+router.use(middleware.headering);
 
 router.get('/', (request, response) => {
     response.status(status.ok).json({

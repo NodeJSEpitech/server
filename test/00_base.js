@@ -24,6 +24,8 @@ describe('Base route', () => {
                 response.headers.should.be.a('object');
                 response.headers.should.have.property('access-control-allow-origin');
                 response.headers['access-control-allow-origin'].should.be.equal('*');
+                response.headers.should.have.property('access-control-allow-headers');
+                response.headers['access-control-allow-headers'].should.be.equal('Content-Type,X-Authentication-Token');
                 response.should.have.status(status.ok);
                 done();
             });
