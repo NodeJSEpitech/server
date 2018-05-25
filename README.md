@@ -1,6 +1,8 @@
 # EpiBlog : API Server
 
 This is the nodejs server of the EpiBlog project.  
+This serveir is currently deployed on heroku : https://epiblog-api.herokuapp.com/  
+The client projet is online in GitHub (Page) : https://nodejsepitech.github.io/epiblogClient/  
 It allows the client of the same project to interact with a mysql database, in order to :
 - create, modify, delete a user account
 - log a user in / out
