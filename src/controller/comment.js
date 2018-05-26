@@ -38,7 +38,7 @@ function getComments(ws, request) {
         });
 }
 
-function postComment(ws, request) {
+function postComment(ws, request, clients) {
     const response = {
             'x-request-id': request.id,
             'status': status.ok,
@@ -59,12 +59,19 @@ function postComment(ws, request) {
                 NULL)`)
         .then(() => {
             response.message = messages.success.comment.post;
+            clients.forEach((client) => {
+                client.send(JSON.stringify({
+                    id: request.post,
+                    type: 'comments',
+                }));
+            });
             ws.send(JSON.stringify(response));
         })
         .catch(() => {
             response.status = status.ko.server;
             response.message = messages.error.fallback;
             ws.send(JSON.stringify(response));
+
         });
 }
 
@@ -90,7 +97,7 @@ function handleRequest(ws, request, clients) {
     } else if (request.post === null) {
         postMessage(ws, request, clients);
     } else {
-        postComment(ws, request);
+        postComment(ws, request, clients);
     }
 }
 
