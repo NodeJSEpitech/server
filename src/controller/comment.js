@@ -59,13 +59,11 @@ function postComment(ws, request, clients) {
                 NULL)`)
         .then(() => {
             response.message = messages.success.comment.post;
+            response.id = request.post;
+            response.type = 'comments';
             clients.forEach((client) => {
-                client.send(JSON.stringify({
-                    id: request.post,
-                    type: 'comments',
-                }));
+                client.send(JSON.stringify(response));
             });
-            ws.send(JSON.stringify(response));
         })
         .catch(() => {
             response.status = status.ko.server;
