@@ -28,7 +28,6 @@ function getComments(ws, request) {
         .then((comments) => {
             response.message = messages.success.comment.get;
             response.data = comments;
-            response.type = 'comments';
             ws.send(JSON.stringify(response));
         })
         .catch(() => {
@@ -85,7 +84,7 @@ function postMessage(ws, request, clients) {
 }
 
 function handleRequest(ws, request, clients) {
-    if (request.method === 'get' && request.post) {
+    if (request.method === 'get') {
         getComments(ws, request);
     } else if (request.post === null) {
         postMessage(ws, request, clients);
