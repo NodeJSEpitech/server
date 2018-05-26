@@ -31,6 +31,11 @@ function create(request, response) {
             'data': {'id': posts.insertId}
         });
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
@@ -57,6 +62,11 @@ function get(request, response) {
             'data': id !== null ? posts[0] : posts
         });
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
@@ -89,6 +99,11 @@ function update(request, response) {
         }
         response.status(status.ok).json({'message': messages.success.post.update});
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
@@ -108,6 +123,11 @@ function remove(request, response) {
         }
         response.status(status.ok).json({'message': messages.success.post.remove});
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }

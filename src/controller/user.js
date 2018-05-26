@@ -44,6 +44,11 @@ function create(request, response) {
             return true;
         });
         return false;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
@@ -67,6 +72,11 @@ function get(request, response) {
             'data': user
         });
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
@@ -99,6 +109,11 @@ function update(request, response) {
         }
         response.status(status.ok).json({'message': messages.success.user.update});
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
@@ -118,6 +133,11 @@ function remove(request, response) {
         }
         response.status(status.ok).json({'message': messages.success.user.remove});
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }

@@ -38,6 +38,11 @@ function authenticate(request, response) {
             return true;
         });
         return false;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
@@ -50,6 +55,11 @@ function logout(request, response) {
         }
         response.status(status.ok).json({'message': messages.success.security.logout});
         return true;
+    }).catch(() => {
+        response.status(status.ko).json({
+            'message': messages.error.fallback,
+        });
+        return false;
     });
     return false;
 }
